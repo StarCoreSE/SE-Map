@@ -1,7 +1,7 @@
 // Change these paths if necessary
 let backgroundImagePath = "background.png"
 
-const apiUrl = 'http://192.168.56.1:8000/update'; 
+const apiUrl = 'http://[domain-name-here]/update'; 
 const pollingInterval = 8 * 60 * 1000; // 8 minutes
 
 
