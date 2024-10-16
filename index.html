@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+		
+    </head>
+
+    <body>
+		<div class="overlay">
+			<h1 id="title"></h1>
+			<div class="options">
+				<div>
+                <input type="checkbox" id="names" name="names_checkbox" onchange="options.showNames = !options.showNames" checked autocomplete="off">
+                <label for="names">Names</label>
+                </div>
+				<div>
+                <input type="checkbox" id="playing" name="playing_checkbox" onchange="isPlaying = !isPlaying" checked autocomplete="off">
+                <label for="playing">Play</label>
+                </div>
+				<div class="slidecontainer">
+				<input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+				</div>
+				<div>
+				<label for="timeLabel" id="timeLabel">00:00:00/00:00:00</label>
+				</div>
+			</div>
+		</div>
+        <canvas class="myCanvas" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"></canvas>
+    </body>
+	
+    <footer>
+    </footer>
+	<script src="main.js"></script>
+</html>
