@@ -34,32 +34,39 @@ let g_data = {};
 
 const server = http.createServer(async (req, res) => {
     try {
-        if (req.url === '/') {
-            const content = await fs.promises.readFile(path.join(__dirname, 'index.html'));
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(content);
-        } else if (req.url === '/main.js') {
-            const content = await fs.promises.readFile(path.join(__dirname, 'main.js'));
-            res.writeHead(200, {'Content-Type': 'text/javascript'});
-            res.end(content);
-        } else if (req.url === '/style.css') {
-            const content = await fs.promises.readFile(path.join(__dirname, 'style.css'));
-            res.writeHead(200, {'Content-Type': 'text/css'});
-            res.end(content);
-        } else if (req.url === '/background.png') {
-            const content = await fs.promises.readFile(path.join(__dirname, 'background.png'));
-            res.writeHead(200, {'Content-Type': 'image/png'});
-            res.end(content);
-        } else if (req.url === '/update') {
-            const content = JSON.stringify(g_data);
-            res.writeHead(200, {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': `${my_url}`
-            });
-            res.end(content);
-        } else {
-            res.writeHead(404, {'Content-Type': 'text/html'});
-            res.end('<h1>404 Not Found</h1>');
+        switch (req.url) {
+            case '/': {
+                const content = await fs.promises.readFile(path.join(__dirname, 'index.html'));
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(content);
+            } break;
+            case '/main.js': {
+                const content = await fs.promises.readFile(path.join(__dirname, 'main.js'));
+                res.writeHead(200, {'Content-Type': 'text/javascript'});
+                res.end(content);
+            } break;
+            case '/style.css': {
+                const content = await fs.promises.readFile(path.join(__dirname, 'style.css'));
+                res.writeHead(200, {'Content-Type': 'text/css'});
+                res.end(content);
+                } break;
+            case '/background.png': {
+                const content = await fs.promises.readFile(path.join(__dirname, 'background.png'));
+                res.writeHead(200, {'Content-Type': 'image/png'});
+                res.end(content);
+            } break;
+            case '/update': {
+                const content = JSON.stringify(g_data);
+                res.writeHead(200, {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': `${my_url}`
+                });
+                res.end(content);
+            } break;
+            default: {
+                res.writeHead(404, {'Content-Type': 'text/html'});
+                res.end('<h1>404 Not Found</h1>');
+            }
         }
     } catch (error) {
         res.writeHead(500, {'Content-Type': 'text/plain'});
