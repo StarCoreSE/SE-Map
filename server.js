@@ -104,7 +104,7 @@ function loadCSV() {
                     case "False": cols[i] = false; break;
                     default:
                         let f = parseFloat(cols[i]);
-                        if (!isNaN(f)) {
+                        if (!isNaN(f) && !cols[i].includes(' ')) {
                             cols[i] = f;
                         }
                 }

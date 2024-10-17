@@ -1,7 +1,7 @@
 // Change these paths if necessary
 let backgroundImagePath = "background.png"
 
-const apiUrl = 'http://[domain-name-here]/update'; 
+const apiUrl = 'http://[address]/update'; 
 const pollingInterval = 8 * 60 * 1000; // 8 minutes
 
 
@@ -185,37 +185,88 @@ function secondsToTime(e){
 
 let cachedScreenPositions = [];
 
+function getFactionColor(faction, alpha) {
+    faction_cols = g_data.FACTIONS.columns;
+    for (let i = 0; i < g_data.FACTIONS.rows.length; ++i) {
+        faction_row = g_data.FACTIONS.rows[i];
+        let tag = faction_row[faction_cols.indexOf('FactionTag')];
+        if (tag == faction) {
+            let color = faction_row[faction_cols.indexOf('Color')];
+            // TODO: proper spengies color to real color format here
+            let comps = color.split(' ').map(comp => Math.abs(parseFloat(comp) * 255));
+            return `rgba(${comps[0]}, ${comps[1]}, ${comps[2]}, ${alpha})`;
+        }
+    }
+    return 'white';
+}
+
+function drawEconomy() {
+    let radius = 5;
+    
+    let cols = g_data.ECONOMY.columns;
+    for (let i = 0; i < g_data.ECONOMY.rows.length; ++i) {
+        let r = g_data.ECONOMY.rows[i];
+        let X = r[cols.indexOf('X')];
+        let Y = r[cols.indexOf('Y')];
+        let p = worldToScreen(X, Y);
+        let x = p.x;
+        let y = p.y;
+        let name = r[cols.indexOf('Name')];
+        
+        let faction = r[cols.indexOf('Faction')];
+        let fill = getFactionColor(faction, 1.0);
+        
+        // circles
+        c.beginPath();
+        c.arc(x, y, radius, 0, Math.PI * 2, false);
+        c.fillStyle = fill;
+        c.fill();
+        
+        // names
+        let xoff = 4;
+        let yoff = 4;
+        c.fillText(name, x + xoff + radius, y + yoff - radius);
+    }
+}
+
+function drawTerritory() {
+    let cols = g_data.TERRITORY.columns;
+    for (let i = 0; i < g_data.TERRITORY.rows.length; ++i) {
+        let r = g_data.TERRITORY.rows[i];
+        let X = r[cols.indexOf('X')];
+        let Y = r[cols.indexOf('Y')];
+        let radius = r[cols.indexOf('Radius')] * zoom;
+        
+        let p = worldToScreen(X, Y);
+        let x = p.x;
+        let y = p.y;
+        let name = r[cols.indexOf('Name')];
+        
+        let faction = r[cols.indexOf('Faction')];
+        let fill = getFactionColor(faction, 0.4);
+        
+        // circles
+        c.beginPath();
+        c.arc(x, y, radius, 0, Math.PI * 2, false);
+        c.fillStyle = fill;
+        c.fill();
+        
+        // names
+        let xoff = 4;
+        let yoff = 4;
+        c.fillText(name, x + xoff + radius, y + yoff - radius);
+    }
+}
+
 function draw(dt) {
 	zoom = lerp(zoom, zoomNext, 0.05125);
 	
 	drawGrid();
 	drawRings();
-	
-    if (g_data) {
-        let radius = 5;
-		let fill = "white";
-        
-        let cols = g_data.ECONOMY.columns;
-        for (let i = 0; i < g_data.ECONOMY.rows.length; ++i) {
-            let r = g_data.ECONOMY.rows[i];
-            let X = r[cols.indexOf('X')];
-            let Y = r[cols.indexOf('Y')];
-            let p = worldToScreen(X, Y);
-            let x = p.x;
-            let y = p.y;
-            let name = r[cols.indexOf('Name')];
-            
-            // circles
-            c.beginPath();
-			c.arc(x, y, radius, 0, Math.PI * 2, false);
-			c.fillStyle = fill;
-			c.fill();
-            
-            // names
-            let xoff = 4;
-			let yoff = 4;
-            c.fillText(name, x + xoff + radius, y + yoff - radius);
-        }
+    
+	if (g_data) {
+        drawTerritory();
+        drawEconomy();
     }
     
 	if (recording) {
