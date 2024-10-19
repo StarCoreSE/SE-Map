@@ -60,9 +60,14 @@ function screenToWorld(x, y) {
 
 function clear() {
 	if (loaded) {
-		c.drawImage(backgroundImage, 0, 0);
-		c.fillStyle = "rgba(0, 0, 0, 0.5)";
+		c.fillStyle = "#000";
 		c.fillRect(0, 0, width, height);
+		
+		let scale = 300000
+		let S = worldToScreen(0,0);
+		let w = backgroundImage.width * (scale * zoom);
+		let h = backgroundImage.height * (scale * zoom);
+		c.drawImage(backgroundImage, S.x - w/2, S.y - h/2, w, h);
 	} else {
 		c.fillStyle = "#003";
 		c.fillRect(0, 0, width, height);
