@@ -11,10 +11,6 @@
 // way for the server to know what the client wants, and to respond to
 // the client with the requested file or data.
 
-// my_url should be the url that clients see in their address bar.
-// The purpose is to set Access-Control-Allow-Origin so that only
-// requests coming from that url are accepted, rather than accepting
-// any ('*') host's request.
 const csvPath = './NpcProviderExport.csv';
 const port = 8000;
 
