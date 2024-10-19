@@ -26,10 +26,6 @@ let warningMessageTime = 0;
 
 calculateCanvasResolution();
 
-var slider = document.getElementById("myRange");
-var timeLabel = document.getElementById("timeLabel");
-slider.value = 0;
-
 let isPlaying = true;
 
 let mouseX = 0;
@@ -79,15 +75,6 @@ function init() {
 
 }
 
-function Vector3(str) {
-	let f = str.split(" ").map(e => Number(e));
-	return {x: f[0], y: f[1], z: f[2]};
-}
-
-function parseCSV(data) {
-    
-}
-
 let previousTimeStamp;
 function animate(timeStamp) {
 	if (previousTimeStamp === undefined) {
@@ -108,26 +95,6 @@ let scrubber = 0.0;
 
 function lerp(v0, v1, t) {
 	return v0*(1-t)+v1*t
-}
-
-function setWarningMessage(message) {
-	warningMessage = message;
-	warningMessageTime = 1;
-}
-
-function drawWarningMessage(dt) {
-	if (warningMessage == "" || warningMessageTime <= 0) {
-		warningMessage = "";
-		warningMessageTime = 0;
-		return;
-	}
-	c.save();
-	c.fillStyle = `rgba(255, 20, 20, ${warningMessageTime})`;
-	c.font = "24px Arial";
-	c.textAlign = "center";
-	c.fillText(warningMessage, width / 2, height / 2);
-	c.restore();
-	warningMessageTime -= dt * 0.001;
 }
 
 function drawGrid() {
@@ -172,16 +139,6 @@ function drawRings() {
 	}
 	c.setLineDash([]);
 }
-
-function secondsToTime(e){
-    const h = Math.floor(e / 3600).toString().padStart(2,'0'),
-          m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
-          s = Math.floor(e % 60).toString().padStart(2,'0');
-    
-    return h + ':' + m + ':' + s;
-    //return `${h}:${m}:${s}`;
-}
-
 
 let cachedScreenPositions = [];
 
@@ -268,99 +225,9 @@ function draw(dt) {
         drawTerritory();
         drawEconomy();
     }
-    
-	if (recording) {
-		let proportion = 1.0 / (recording.length - 1);
-		let remapped = scrubber / proportion;
-		let currentIndex = Math.floor(remapped);
-		let nextIndex = currentIndex+1;
-		
-		if (nextIndex == recording.length) {
-			nextIndex = currentIndex;
-		}
-		
-		let currentData = recording[currentIndex];
-		let nextData = recording[nextIndex];
-		
-		let radius = 5;
-		
-		let fill = "white";
-		
-		cachedScreenPositions = [];
-		
-		for (obj of currentData.entries) {
-			let next = nextData.entries.find(e => e.entityId == obj.entityId);
-			let hp = obj.health;
-			let nextPosition = {x: 0, y: 0};
-			let amt = 0.0;
-			if (next) {
-				nextPosition = next.position;
-				amt = remapped - Math.floor(remapped);
-				hp = lerp(obj.health, next.health, amt);
-			}
-			let wx = lerp(obj.position.x, nextPosition.x, amt);
-			let wy = lerp(obj.position.y, nextPosition.y, amt);
-			
-			if (trackedTargetId === obj.entityId) {
-				camera.x = wx;
-				camera.y = wy;
-			}
-			
-			let S = worldToScreen(wx, wy);
-			let x = S.x;
-			let y = S.y;
-			S.entityId = obj.entityId;
-			cachedScreenPositions.push(S);
-
-			c.beginPath();
-			c.arc(x, y, radius, 0, Math.PI * 2, false);
-
-			if (obj.faction !== "Unowned") {
-				let hueValue = parseFloat(obj.factionColor.split(' ')[0]);
-				// Normalize the hue value to a [0, 360] scale assuming 0.55 maps to 360 degrees
-				let normalizedHue = (hueValue / 0.55) * 360;
-
-				// Using HSL with full saturation (100%) and full lightness (50% for visible color)
-				c.fillStyle = `hsl(${normalizedHue}, 100%, 50%)`;
-			} else {
-				c.fillStyle = fill;
-			}
-			c.fill();
-			
-			let xoff = 4;
-			let yoff = 4;
-			// velocity as delta distance between two frames
-			let velocity = Math.sqrt(sq(nextPosition.x - obj.position.x) + (nextPosition.y - obj.position.y));
-			if (isNaN(velocity)) velocity = 0;
-			if (options.showNames) {
-				c.fillText(obj.name + " "+velocity.toFixed(0)+" m/s", x + xoff + radius, y + yoff - radius);
-				c.fillText(Math.floor(hp * 100)+"%", x + xoff + radius, y + yoff * 2);
-			}
-		}
-		if (isPlaying && !isSliding) {
-		// NOTE: assumes recording samples are one second apart.
-			scrubber += dt / (recording.length * 1000);
-			slider.value = scrubber * 100;
-			if (scrubber >= 1.0) scrubber = 0;
-		}
-		
-		// timeLabel
-		timeLabel.innerHTML = secondsToTime(Math.floor(scrubber * (recording.length)))+"/"+secondsToTime(recording.length);
-	}
-	drawWarningMessage(dt);
 }
 
-var isSliding = false;
 
-slider.addEventListener('input', function () {
-  isSliding = true;
-  scrubber = slider.value / 100;
-});
-
-slider.addEventListener('mouseup', function () {
-  isSliding = false;
-  scrubber = slider.value / 100;
-});
 
 function calculateCanvasResolution() {
 	width = canvas.clientWidth;
