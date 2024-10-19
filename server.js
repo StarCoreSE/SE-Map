@@ -15,7 +15,6 @@
 // The purpose is to set Access-Control-Allow-Origin so that only
 // requests coming from that url are accepted, rather than accepting
 // any ('*') host's request.
-const my_url = 'http://localhost:8000';
 const csvPath = './NpcProviderExport.csv';
 const port = 8000;
 
@@ -59,7 +58,7 @@ const server = http.createServer(async (req, res) => {
                 const content = JSON.stringify(g_data);
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': `${my_url}`
+                    'Access-Control-Allow-Origin': '*'
                 });
                 res.end(content);
             } break;

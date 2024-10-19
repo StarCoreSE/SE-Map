@@ -1,7 +1,7 @@
 // Change these paths if necessary
 let backgroundImagePath = "background.png"
 
-const apiUrl = 'http://[address]/update'; 
+const apiUrl = 'http://localhost:8000/update'; 
 const pollingInterval = 8 * 60 * 1000; // 8 minutes
 
 
@@ -207,7 +207,7 @@ function drawEconomy() {
     for (let i = 0; i < g_data.ECONOMY.rows.length; ++i) {
         let r = g_data.ECONOMY.rows[i];
         let X = r[cols.indexOf('X')];
-        let Y = r[cols.indexOf('Y')];
+        let Y = r[cols.indexOf('Z')];
         let p = worldToScreen(X, Y);
         let x = p.x;
         let y = p.y;
@@ -234,7 +234,7 @@ function drawTerritory() {
     for (let i = 0; i < g_data.TERRITORY.rows.length; ++i) {
         let r = g_data.TERRITORY.rows[i];
         let X = r[cols.indexOf('X')];
-        let Y = r[cols.indexOf('Y')];
+        let Y = r[cols.indexOf('Z')];
         let radius = r[cols.indexOf('Radius')] * zoom;
         
         let p = worldToScreen(X, Y);
@@ -404,12 +404,15 @@ canvas.addEventListener("mouseup", (e) => {
 	}
 });
 
-let zoomIndex = 4;
+let zoomLevels = [1, 1/2, 1/8, 1/32, 1/128, 1/512, 1/2048, 1/4096, 1/16384, 1/32768, 1/65536, 1/131072, 1/262144, 1/524288];
+let zoomIndex = 13;
+
+zoom = zoomLevels[zoomIndex];
+zoomNext = zoom;
 
 canvas.addEventListener("wheel", e => {
     e.preventDefault();
     let scrollDelta = e.deltaY > 0 ? 1 : -1;
-    let zoomLevels = [16, 8, 4, 2, 1, 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.03125/16, 0.03125/32, 0.03125/128, 0.03125/512];
     let prvZoomIndex = zoomIndex;
     zoomIndex += scrollDelta;
 
