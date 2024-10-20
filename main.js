@@ -188,6 +188,9 @@ function drawEconomy() {
         let xoff = 4;
         let yoff = 4;
         c.fillText(name, x + xoff + radius, y + yoff - radius);
+        let xf = Math.floor(X / 1000)
+        let yf = Math.floor(Y / 1000)
+        c.fillText(`${xf}, ${yf} km`, x + xoff + radius, y - yoff-2 - radius);
     }
 }
 
