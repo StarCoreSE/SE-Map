@@ -64,7 +64,8 @@ function clear() {
 		c.fillRect(0, 0, width, height);
 		
 		let scale = 300000
-		let S = worldToScreen(0,0);
+        // These offsets in world space are to center the background image
+		let S = worldToScreen(5000000, 2000000);
 		let w = backgroundImage.width * (scale * zoom);
 		let h = backgroundImage.height * (scale * zoom);
 		c.drawImage(backgroundImage, S.x - w/2, S.y - h/2, w, h);
