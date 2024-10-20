@@ -122,27 +122,26 @@ function drawGrid() {
 }
 
 function drawRings() {
-	// draw distance rings (radii in meters)
-	let rings = [100, 250, 500, 1000, 5000, 10000, 20000];
-	let ringColor = "green";
-	let p = worldToScreen(0, 0);
-	let x = p.x;
-	let y = p.y;
-	
-	c.strokeStyle = ringColor;
-	for (radius of rings) {
-		//if (radius * zoom > width / 1.5) break;
-		c.beginPath();
-		c.lineWidth = 1;
-		c.arc(x, y, radius * zoom, 0, Math.PI * 2, false);
-		c.stroke();
-		let pad = 4;
-		c.fillStyle = ringColor
-		if (zoom*radius > 50) {
-			c.fillText(radius+" m", x + radius*zoom + pad, y - pad);
-		}
-	}
-	c.setLineDash([]);
+    // Update the rings so that the largest one is 200,000 km (200,000,000 meters)
+    let rings = [50000000, 200000000]; // Radii in meters
+    let ringColor = "green";
+    let p = worldToScreen(0, 0); // Center the rings
+    let x = p.x;
+    let y = p.y;
+
+    c.strokeStyle = ringColor;
+    for (radius of rings) {
+        c.beginPath();
+        c.lineWidth = 1;
+        c.arc(x, y, radius * zoom, 0, Math.PI * 2, false); // Draw each ring, scaled by zoom
+        c.stroke();
+        let pad = 4;
+        c.fillStyle = ringColor;
+        if (zoom * radius > 50) {
+            c.fillText((radius / 1000) + " km", x + radius * zoom + pad, y - pad); // Display radius label in km
+        }
+    }
+    c.setLineDash([]);
 }
 
 let cachedScreenPositions = [];
