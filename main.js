@@ -46,18 +46,6 @@ let recording;
 
 let isAnimate = true;
 
-async function loadConfig() {
-    const response = await fetch('./config.json');
-    const config = await response.json();
-    return config.apiUrl;
-}
-
-loadConfig().then(apiUrl => {
-    pollServer(apiUrl, pollingInterval);
-}).catch(error => {
-    console.error("Failed to load config:", error);
-});
-
 function worldToScreen(x, y) {
 	x = (x - camera.x) * zoom + offset.x;
 	y = (y - camera.y) * zoom + offset.y;
@@ -369,3 +357,5 @@ function pollServer(url, interval) {
       setTimeout(() => pollServer(url, interval), interval);
     });
 }
+
+pollServer(apiUrl, pollingInterval);
