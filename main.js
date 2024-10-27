@@ -162,6 +162,87 @@ function getFactionColor(faction, alpha) {
     return 'white';
 }
 
+function generateGpsList() {
+    if (!g_data || !g_data.ECONOMY) {
+        console.error("Economy data not available.");
+        return;
+    }
+
+    const gpsEntries = [];
+    const cols = g_data.ECONOMY.columns;
+    const nameIndex = cols.indexOf('Name');
+    const xIndex = cols.indexOf('X');
+    const yIndex = cols.indexOf('Y');
+    const zIndex = cols.indexOf('Z');
+    
+    for (let i = 0; i < g_data.ECONOMY.rows.length; ++i) {
+        const entry = g_data.ECONOMY.rows[i];
+        const name = entry[nameIndex];
+        const x = entry[xIndex].toFixed(2); // Adjust decimals as needed
+        const y = entry[yIndex].toFixed(2);
+        const z = entry[zIndex].toFixed(2);
+
+        const gpsString = `GPS:${name}:${x}:${y}:${z}:#FFFFA1B6:`;
+        gpsEntries.push(gpsString);
+    }
+
+    return gpsEntries.join('\n');
+}
+
+function copyGpsListToClipboard() {
+    const gpsList = generateGpsList();
+    if (!gpsList) {
+        console.error("No GPS data available to copy.");
+        return;
+    }
+
+    // Create a temporary textarea element to hold the text
+    const tempTextArea = document.createElement("textarea");
+    tempTextArea.value = gpsList;
+    document.body.appendChild(tempTextArea);
+
+    // Select the text and copy it
+    tempTextArea.select();
+    tempTextArea.setSelectionRange(0, 99999); // For mobile devices
+    try {
+        document.execCommand("copy");
+        console.log("GPS list copied to clipboard!");
+        buttonText = "GPS list copied!"; // Update the button text for feedback
+        setTimeout(() => {
+            buttonText = "Copy GPS List"; // Revert after 2 seconds
+            draw(); // Redraw to update button text
+        }, 2000);
+    } catch (err) {
+        console.error("Failed to copy GPS list:", err);
+        buttonText = "Copy failed!";
+        setTimeout(() => {
+            buttonText = "Copy GPS List"; // Revert after 2 seconds
+            draw(); // Redraw to update button text
+        }, 2000);
+    }
+
+    // Remove the temporary textarea element
+    document.body.removeChild(tempTextArea);
+    draw(); // Redraw to immediately show feedback
+}
+
+
+const buttonX = 10;
+const buttonY = 10;
+const buttonWidth = 150;
+const buttonHeight = 30;
+
+let buttonText = "Copy GPS List"; // Initial button text
+
+function drawButton() {
+    c.fillStyle = "#444"; // Button background color
+    c.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    
+    c.fillStyle = "#FFF"; // Button text color
+    c.font = "14px Arial";
+    c.fillText(buttonText, buttonX + 15, buttonY + 20); // Adjust text position as needed
+}
+
 function drawEconomy() {
     let radius = 5;
     
@@ -224,15 +305,16 @@ function drawTerritory() {
 }
 
 function draw(dt) {
-	zoom = lerp(zoom, zoomNext, 0.05125);
-	
-	drawGrid();
-	drawRings();
+    zoom = lerp(zoom, zoomNext, 0.05125);
     
-	if (g_data) {
+    drawGrid();
+    drawRings();
+    if (g_data) {
         drawTerritory();
         drawEconomy();
     }
+
+    drawButton(); // Draw the button after other elements
 }
 
 
@@ -331,6 +413,18 @@ canvas.addEventListener("mousemove", function(e) {
 		camera.x = cameraPrv.x + (dragStartPosition.x - mouseX) / zoom;
 		camera.y = cameraPrv.y + (dragStartPosition.y - mouseY) / zoom;
 	}
+});
+
+canvas.addEventListener("click", function(e) {
+    let cRect = canvas.getBoundingClientRect();
+    let clickX = e.clientX - cRect.left;
+    let clickY = e.clientY - cRect.top;
+    
+    // Check if the click is within the button bounds
+    if (clickX >= buttonX && clickX <= buttonX + buttonWidth &&
+        clickY >= buttonY && clickY <= buttonY + buttonHeight) {
+        copyGpsListToClipboard();
+    }
 });
 
 function pollServer(url, interval) {
