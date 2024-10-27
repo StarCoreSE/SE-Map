@@ -239,7 +239,7 @@ function drawButton() {
     c.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
     
     c.fillStyle = "#FFF"; // Button text color
-    c.font = "14px Arial";
+   // c.font = "14px Arial";
     c.fillText(buttonText, buttonX + 15, buttonY + 20); // Adjust text position as needed
 }
 
