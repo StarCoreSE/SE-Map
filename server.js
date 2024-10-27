@@ -11,7 +11,7 @@
 // way for the server to know what the client wants, and to respond to
 // the client with the requested file or data.
 
-const csvPath = './NpcProviderExport.csv';
+const csvPath = './3099943209.sbm_NpcProvider/NpcProviderExport.csv';
 const port = 8000;
 
 // How long to wait between regular attempts
